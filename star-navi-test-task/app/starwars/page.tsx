@@ -25,8 +25,8 @@ const StarWars = () => {
         Star Wars List
       </h1>
 
-      <HeroList onSelect={onSelectHero} />
-      
+      <HeroList onSelectHero={onSelectHero} />
+
       {isOpenModal && (
         <Modal
           isOpen={isOpenModal}

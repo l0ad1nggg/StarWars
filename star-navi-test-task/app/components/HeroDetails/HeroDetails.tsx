@@ -6,28 +6,41 @@ import ReactFlow, {
   useNodesState,
   Edge,
   Node,
-  EdgeProps,
   Background,
 } from "reactflow";
 
 import "reactflow/dist/style.css";
 import Ship from "../../types/Ship";
-import useHeroDetails from "@/app/utils/useHeroDetails";
-import CustomEdge from "../CustomEdge/CustomEdge";
+import useHeroDetails from "@/app/hooks/useHeroDetails";
+import CustomEdge, { edgeTypes } from "../CustomEdge/CustomEdge";
+import {
+  filmNodeX,
+  filmNodeY,
+  heroNodeX,
+  heroNodeY,
+  intervalOfPoints,
+  pointsSize,
+  shipNodeX,
+  shipNodeY,
+} from "@/app/constants";
 
 interface Props {
   selectedHero: Hero;
 }
 
 const HeroDetails: React.FC<Props> = ({ selectedHero }) => {
+  // Extract films and ships data using a custom hook
   const { films, ships } = useHeroDetails(selectedHero);
+
+  // State for nodes and edges
   const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
 
   useEffect(() => {
+    // Define the hero node with its initial position and style
     const heroNode: Node = {
       id: selectedHero.name,
-      position: { x: 800, y: 100 },
+      position: { x: heroNodeX, y: heroNodeY }, // Define position for the hero node
       data: {
         label: selectedHero.name,
       },
@@ -40,11 +53,12 @@ const HeroDetails: React.FC<Props> = ({ selectedHero }) => {
       },
     };
 
+    // Create nodes for films with their positions and styles
     const filmNodes: Node[] = films.map((film, index) => ({
       id: `${film.id}`,
       position: {
-        x: 800 + 200 * (index - Math.floor(films.length / 2)),
-        y: 200,
+        x: filmNodeX + 200 * (index - Math.floor(films.length / 2)),
+        y: filmNodeY,
       },
       data: { label: film.title },
       style: {
@@ -56,11 +70,12 @@ const HeroDetails: React.FC<Props> = ({ selectedHero }) => {
       },
     }));
 
+    // Create nodes for ships with their positions and styles
     const shipNodes: Node[] = ships.map((ship: Ship, index: number) => ({
       id: `${ship.id}`,
       position: {
-        x: 800 + 200 * (index - Math.floor(ships.length / 2)),
-        y: 350 + 50,
+        x: shipNodeX + 200 * (index - Math.floor(ships.length / 2)),
+        y: shipNodeY,
       },
       data: { label: ship.name },
       style: {
@@ -72,6 +87,7 @@ const HeroDetails: React.FC<Props> = ({ selectedHero }) => {
       },
     }));
 
+    // Create edges between the hero node and film nodes
     const filmEdges: Edge[] = filmNodes.map((filmNode) => ({
       id: `${heroNode.id}-${filmNode.id}`,
       source: heroNode.id,
@@ -79,6 +95,7 @@ const HeroDetails: React.FC<Props> = ({ selectedHero }) => {
       type: "black-line",
     }));
 
+    // Create edges between films and associated ships
     const filmShipEdges: Edge[] = [];
     let edgeIdCounter = 0;
 
@@ -96,9 +113,12 @@ const HeroDetails: React.FC<Props> = ({ selectedHero }) => {
         }
       }
     }
+
+    // Combine all nodes and edges
     const allNodes = [heroNode, ...filmNodes, ...shipNodes];
     const allEdges = [...filmEdges, ...filmShipEdges];
 
+    // Set nodes and edges states
     setNodes(allNodes);
     setEdges(allEdges);
   }, [selectedHero, films, ships, setNodes, setEdges]);
@@ -120,7 +140,11 @@ const HeroDetails: React.FC<Props> = ({ selectedHero }) => {
             edgeTypes={edgeTypes}
             className="bg-black w-full h-full"
           >
-            <Background color="yellow" gap={64} size={1} />
+            <Background
+              color="yellow"
+              gap={intervalOfPoints}
+              size={pointsSize}
+            />
           </ReactFlow>
         </div>
       </div>
@@ -129,7 +153,3 @@ const HeroDetails: React.FC<Props> = ({ selectedHero }) => {
 };
 
 export default HeroDetails;
-
-const edgeTypes = {
-  "black-line": CustomEdge,
-};

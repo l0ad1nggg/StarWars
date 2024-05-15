@@ -2,10 +2,10 @@ import Hero from "@/app/types/Hero";
 
 interface Props {
   hero: Hero;
-  onSelect: (hero: Hero) => void;
+  onHeroSelect: (hero: Hero) => void;
 }
 
-const HeroItem: React.FC<Props> = ({ hero, onSelect: onHeroSelect }) => (
+const HeroItem: React.FC<Props> = ({ hero, onHeroSelect }) => (
   <div
     key={hero.id}
     onClick={() => onHeroSelect(hero)}

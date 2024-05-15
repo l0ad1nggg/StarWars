@@ -29,3 +29,7 @@ const CustomEdge: React.FC<EdgeProps> = ({
 };
 
 export default CustomEdge;
+
+export const edgeTypes = {
+  "black-line": CustomEdge,
+};
