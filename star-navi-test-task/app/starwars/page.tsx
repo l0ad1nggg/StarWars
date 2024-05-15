@@ -7,38 +7,42 @@ import HeroList from "../components/HeroList/HeroList";
 
 const StarWars = () => {
   const [selectedHero, setSelectedHero] = useState<Hero | null>(null);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [isOpenModal, setIsOpenModal] = useState(false);
 
   const onSelectHero = (hero: Hero) => {
     setSelectedHero(hero);
-    setModalIsOpen(true);
+    setIsOpenModal(true);
   };
 
   const closeModal = () => {
     setSelectedHero(null);
-    setModalIsOpen(false);
+    setIsOpenModal(false);
   };
 
   return (
     <div className="bg-black">
-        <h1 className="flex justify-center text-yellow-500 p-4">Star Wars List</h1>
-         <HeroList onSelect={onSelectHero} />
-        {modalIsOpen && (
-          <Modal
-            isOpen={modalIsOpen}
-            onRequestClose={closeModal}
-            contentLabel="Hero Details"
-            className="bg-neutral-800"
+      <h1 className="flex justify-center text-yellow-500 p-4">
+        Star Wars List
+      </h1>
+
+      <HeroList onSelect={onSelectHero} />
+      
+      {isOpenModal && (
+        <Modal
+          isOpen={isOpenModal}
+          onRequestClose={closeModal}
+          contentLabel="Hero Details"
+          className="bg-neutral-800"
+        >
+          {selectedHero && <HeroDetails selectedHero={selectedHero} />}
+          <button
+            className="absolute top-0 right-4 mt-4 p-2 rounded-full bg-black text-yellow-500 hover:text-black hover:bg-yellow-500"
+            onClick={closeModal}
           >
-            {selectedHero && <HeroDetails selectedHero={selectedHero} />}
-            <button
-              className="absolute top-0 right-4 mt-4 p-2 rounded-full bg-black text-yellow-500 hover:text-black hover:bg-yellow-500"
-              onClick={closeModal}
-            >
-              Close Modal
-            </button>
-          </Modal>
-        )}
+            Close Modal
+          </button>
+        </Modal>
+      )}
     </div>
   );
 };

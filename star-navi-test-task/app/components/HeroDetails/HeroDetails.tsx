@@ -1,6 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect } from "react";
 import Hero from "../../types/Hero";
 import ReactFlow, {
   useEdgesState,
@@ -12,52 +11,18 @@ import ReactFlow, {
 } from "reactflow";
 
 import "reactflow/dist/style.css";
-import Film from "../../types/Film";
 import Ship from "../../types/Ship";
+import useHeroDetails from "@/app/utils/useHeroDetails";
+import CustomEdge from "../CustomEdge/CustomEdge";
 
 interface Props {
   selectedHero: Hero;
 }
 
 const HeroDetails: React.FC<Props> = ({ selectedHero }) => {
-  const [films, setFilms] = useState<Film[]>([]);
-  const [ships, setShips] = useState<Ship[]>([]);
+  const { films, ships } = useHeroDetails(selectedHero);
   const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
-
-  useEffect(() => {
-    const fetchHeroDetails = async () => {
-      try {
-        const filmsData = [];
-
-        for (const filmId of selectedHero.films) {
-          const filmResponse = axios.get(
-            `https://sw-api.starnavi.io/films/${filmId}/`
-          );
-          const film: Film = (await filmResponse).data;
-          filmsData.push(film);
-        }
-
-        setFilms(filmsData);
-
-        const shipsData = [];
-
-        for (const shipId of selectedHero.starships) {
-          const shipResponse = await axios.get(
-            `https://sw-api.starnavi.io/starships/${shipId}/`
-          );
-          const ship: Ship = shipResponse.data;
-          shipsData.push(ship);
-        }
-
-        setShips(shipsData);
-      } catch (error) {
-        console.error("Error fetching hero details:", error);
-      }
-    };
-
-    fetchHeroDetails();
-  }, [selectedHero]);
 
   useEffect(() => {
     const heroNode: Node = {
@@ -67,7 +32,7 @@ const HeroDetails: React.FC<Props> = ({ selectedHero }) => {
         label: selectedHero.name,
       },
       style: {
-        backgroundColor: "rgb(163 163 163)",
+        backgroundColor: "rgb(0 128 0)",
         color: "#000000",
         textAlign: "center",
         fontSize: "14px",
@@ -83,7 +48,7 @@ const HeroDetails: React.FC<Props> = ({ selectedHero }) => {
       },
       data: { label: film.title },
       style: {
-        backgroundColor: "rgb(163 163 163)",
+        backgroundColor: "rgb(59 130 246)",
         color: "#000000",
         textAlign: "center",
         fontSize: "12px",
@@ -99,7 +64,7 @@ const HeroDetails: React.FC<Props> = ({ selectedHero }) => {
       },
       data: { label: ship.name },
       style: {
-        backgroundColor: "rgb(163 163 163)",
+        backgroundColor: "rgb(184 15 10)",
         color: "#000000",
         textAlign: "center",
         fontSize: "12px",
@@ -145,6 +110,7 @@ const HeroDetails: React.FC<Props> = ({ selectedHero }) => {
           <h2 className="text-2xl text-yellow-500 font-bold pt-7">
             Details for {selectedHero.name}
           </h2>
+
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -163,32 +129,6 @@ const HeroDetails: React.FC<Props> = ({ selectedHero }) => {
 };
 
 export default HeroDetails;
-
-const CustomEdge: React.FC<EdgeProps> = ({
-  id,
-  sourceX,
-  sourceY,
-  targetX,
-  targetY,
-  style = {},
-}) => {
-  const controlPointX = (sourceX + targetX) / 2;
-  const controlPointY = (sourceY + targetY) / 2;
-
-  return (
-    <>
-      <path
-        id={id}
-        style={{
-          strokeWidth: 3,
-          stroke: "yellow",
-          ...style,
-        }}
-        d={`M${sourceX},${sourceY}Q${controlPointX},${controlPointY} ${targetX},${targetY}`}
-      />
-    </>
-  );
-};
 
 const edgeTypes = {
   "black-line": CustomEdge,
